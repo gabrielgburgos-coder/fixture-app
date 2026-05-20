@@ -32,13 +32,10 @@ function App() {
           element={<Front />}
         />
 
-        <Route
-          path="/admin"
-          element={
-            <Admin
-              equipos={equipos}
-              setEquipos={setEquipos}
-            />
+       <Route
+  path="/admin"
+  element={<Admin />}
+/>
           }
         />
       </Routes>
