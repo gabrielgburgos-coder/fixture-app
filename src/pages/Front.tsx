@@ -43,7 +43,7 @@ function Front() {
         padding: "40px",
       }}
     >
-      <h1>Tabla ⚽</h1>
+      <h1>Tabla de posiciones</h1>
 
       <div
         style={{
