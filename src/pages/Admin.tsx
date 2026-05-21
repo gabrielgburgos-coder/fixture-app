@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 
-import { db, storage } from "../firebase"
+import { db } from "../firebase"
 
 import {
   collection,
@@ -11,11 +11,7 @@ import {
   updateDoc,
 } from "firebase/firestore"
 
-import {
-  ref,
-  uploadBytes,
-  getDownloadURL,
-} from "firebase/storage"
+import { uploadImage } from "../utils/uploadImage"
 
 function Admin() {
   const [equipos, setEquipos] = useState<any[]>([])
@@ -24,72 +20,63 @@ function Admin() {
   const [puntos, setPuntos] = useState("")
   const [archivo, setArchivo] = useState<any>(null)
 
-  // cargar equipos en vivo
+  // 🔥 cargar equipos en vivo
   useEffect(() => {
-    const unsubscribe = onSnapshot(
-      collection(db, "equipos"),
-      (snapshot) => {
-        const lista: any[] = []
+    const unsubscribe = onSnapshot(collection(db, "equipos"), (snapshot) => {
+      const lista: any[] = []
 
-        snapshot.forEach((docu) => {
-          lista.push({
-            id: docu.id,
-            ...docu.data(),
-          })
+      snapshot.forEach((docu) => {
+        lista.push({
+          id: docu.id,
+          ...docu.data(),
         })
+      })
 
-        lista.sort(
-          (a, b) => b.puntos - a.puntos
-        )
+      lista.sort((a, b) => b.puntos - a.puntos)
 
-        setEquipos(lista)
-      }
-    )
+      setEquipos(lista)
+    })
 
     return () => unsubscribe()
   }, [])
 
-  // agregar equipo
+  // 🔥 agregar equipo (CLOUDINARY)
   const agregarEquipo = async (e: any) => {
     e.preventDefault()
 
+    if (!nombre || !puntos) return
     if (!archivo) return
 
-    const imageRef = ref(
-      storage,
-      `escudos/${Date.now()}-${archivo.name}`
-    )
+    try {
+      // 🔥 subir imagen a Cloudinary
+      const imageUrl = await uploadImage(archivo)
 
-    await uploadBytes(imageRef, archivo)
+      // 🔥 guardar en Firestore
+      await addDoc(collection(db, "equipos"), {
+        nombre,
+        puntos: Number(puntos),
+        escudo: imageUrl,
+      })
 
-    const imageUrl = await getDownloadURL(imageRef)
-
-    await addDoc(collection(db, "equipos"), {
-      nombre,
-      puntos: Number(puntos),
-      escudo: imageUrl,
-    })
-
-    setNombre("")
-    setPuntos("")
-    setArchivo(null)
+      // limpiar form
+      setNombre("")
+      setPuntos("")
+      setArchivo(null)
+    } catch (err) {
+      console.error(err)
+      alert("Error agregando equipo")
+    }
   }
 
-  // sumar punto
-  const sumarPunto = async (
-    id: string,
-    puntosActuales: number
-  ) => {
+  // 🔥 sumar punto
+  const sumarPunto = async (id: string, puntosActuales: number) => {
     await updateDoc(doc(db, "equipos", id), {
       puntos: puntosActuales + 1,
     })
   }
 
-  // restar punto
-  const restarPunto = async (
-    id: string,
-    puntosActuales: number
-  ) => {
+  // 🔥 restar punto
+  const restarPunto = async (id: string, puntosActuales: number) => {
     if (puntosActuales <= 0) return
 
     await updateDoc(doc(db, "equipos", id), {
@@ -97,7 +84,7 @@ function Admin() {
     })
   }
 
-  // eliminar
+  // 🔥 eliminar
   const eliminarEquipo = async (id: string) => {
     await deleteDoc(doc(db, "equipos", id))
   }
@@ -151,9 +138,7 @@ function Admin() {
         <input
           type="file"
           accept="image/*"
-          onChange={(e: any) =>
-            setArchivo(e.target.files[0])
-          }
+          onChange={(e: any) => setArchivo(e.target.files[0])}
         />
 
         <button
@@ -193,13 +178,7 @@ function Admin() {
               alignItems: "center",
             }}
           >
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "15px",
-              }}
-            >
+            <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
               <img
                 src={equipo.escudo}
                 alt="escudo"
@@ -217,39 +196,16 @@ function Admin() {
               </div>
             </div>
 
-            <div
-              style={{
-                display: "flex",
-                gap: "10px",
-              }}
-            >
-              <button
-                onClick={() =>
-                  sumarPunto(
-                    equipo.id,
-                    equipo.puntos
-                  )
-                }
-              >
+            <div style={{ display: "flex", gap: "10px" }}>
+              <button onClick={() => sumarPunto(equipo.id, equipo.puntos)}>
                 +1
               </button>
 
-              <button
-                onClick={() =>
-                  restarPunto(
-                    equipo.id,
-                    equipo.puntos
-                  )
-                }
-              >
+              <button onClick={() => restarPunto(equipo.id, equipo.puntos)}>
                 -1
               </button>
 
-              <button
-                onClick={() =>
-                  eliminarEquipo(equipo.id)
-                }
-              >
+              <button onClick={() => eliminarEquipo(equipo.id)}>
                 Eliminar
               </button>
             </div>
