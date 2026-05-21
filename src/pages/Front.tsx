@@ -4,6 +4,7 @@ import { collection, onSnapshot } from "firebase/firestore"
 
 function Front() {
   const [equipos, setEquipos] = useState<any[]>([])
+  const [imagenSeleccionada, setImagenSeleccionada] = useState<string | null>(null)
 
   useEffect(() => {
     const unsubscribe = onSnapshot(collection(db, "equipos"), (snapshot) => {
@@ -55,7 +56,6 @@ function Front() {
               alignItems: "center",
             }}
           >
-            {/* IZQUIERDA */}
             <div
               style={{
                 display: "flex",
@@ -63,7 +63,6 @@ function Front() {
                 gap: "18px",
               }}
             >
-              {/* POSICIÓN MÁS VISIBLE */}
               <div
                 style={{
                   width: "45px",
@@ -76,22 +75,23 @@ function Front() {
                   fontWeight: "bold",
                   fontSize: "18px",
                   color: "#fff",
-                  boxShadow: "0 0 10px rgba(0,0,0,0.4)",
                 }}
               >
                 #{index + 1}
               </div>
 
-              {/* ESCUDO MÁS GRANDE */}
+              {/* ESCUDO CLICKABLE */}
               <img
                 src={equipo.escudo}
                 alt="escudo"
+                onClick={() => setImagenSeleccionada(equipo.escudo)}
                 style={{
                   width: "80px",
                   height: "80px",
                   borderRadius: "50%",
                   objectFit: "cover",
                   border: "2px solid #52525b",
+                  cursor: "pointer",
                 }}
               />
 
@@ -100,13 +100,42 @@ function Front() {
               </div>
             </div>
 
-            {/* PUNTOS */}
             <h2 style={{ fontSize: "22px" }}>
               {equipo.puntos} pts
             </h2>
           </div>
         ))}
       </div>
+
+      {/* MODAL IMAGEN */}
+      {imagenSeleccionada && (
+        <div
+          onClick={() => setImagenSeleccionada(null)}
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            background: "rgba(0,0,0,0.8)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 999,
+          }}
+        >
+          <img
+            src={imagenSeleccionada}
+            alt="grande"
+            style={{
+              maxWidth: "90%",
+              maxHeight: "90%",
+              borderRadius: "20px",
+              boxShadow: "0 0 20px rgba(0,0,0,0.6)",
+            }}
+          />
+        </div>
+      )}
     </div>
   )
 }

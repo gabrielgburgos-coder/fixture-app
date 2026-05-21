@@ -20,7 +20,6 @@ function Admin() {
   const [puntos, setPuntos] = useState("")
   const [archivo, setArchivo] = useState<any>(null)
 
-  // 🔥 cargar equipos en vivo
   useEffect(() => {
     const unsubscribe = onSnapshot(collection(db, "equipos"), (snapshot) => {
       const lista: any[] = []
@@ -40,7 +39,6 @@ function Admin() {
     return () => unsubscribe()
   }, [])
 
-  // 🔥 agregar equipo (CLOUDINARY)
   const agregarEquipo = async (e: any) => {
     e.preventDefault()
 
@@ -48,17 +46,14 @@ function Admin() {
     if (!archivo) return
 
     try {
-      // 🔥 subir imagen a Cloudinary
       const imageUrl = await uploadImage(archivo)
 
-      // 🔥 guardar en Firestore
       await addDoc(collection(db, "equipos"), {
         nombre,
         puntos: Number(puntos),
         escudo: imageUrl,
       })
 
-      // limpiar form
       setNombre("")
       setPuntos("")
       setArchivo(null)
@@ -68,23 +63,19 @@ function Admin() {
     }
   }
 
-  // 🔥 sumar punto
-  const sumarPunto = async (id: string, puntosActuales: number) => {
+  // 🔥 función genérica para sumar/restar
+  const cambiarPuntos = async (
+    id: string,
+    puntosActuales: number,
+    delta: number
+  ) => {
+    const nuevoValor = puntosActuales + delta
+
     await updateDoc(doc(db, "equipos", id), {
-      puntos: puntosActuales + 1,
+      puntos: nuevoValor < 0 ? 0 : nuevoValor,
     })
   }
 
-  // 🔥 restar punto
-  const restarPunto = async (id: string, puntosActuales: number) => {
-    if (puntosActuales <= 0) return
-
-    await updateDoc(doc(db, "equipos", id), {
-      puntos: puntosActuales - 1,
-    })
-  }
-
-  // 🔥 eliminar
   const eliminarEquipo = async (id: string) => {
     await deleteDoc(doc(db, "equipos", id))
   }
@@ -99,7 +90,7 @@ function Admin() {
         fontFamily: "Arial",
       }}
     >
-      <h1>Panel Admin 🛠️</h1>
+      <h1>Carga de equipos y puntajes</h1>
 
       <form
         onSubmit={agregarEquipo}
@@ -196,14 +187,16 @@ function Admin() {
               </div>
             </div>
 
-            <div style={{ display: "flex", gap: "10px" }}>
-              <button onClick={() => sumarPunto(equipo.id, equipo.puntos)}>
-                +1
-              </button>
+            <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+              {/* SUMAR */}
+              <button onClick={() => cambiarPuntos(equipo.id, equipo.puntos, 1)}>+1</button>
+              <button onClick={() => cambiarPuntos(equipo.id, equipo.puntos, 10)}>+10</button>
+              <button onClick={() => cambiarPuntos(equipo.id, equipo.puntos, 100)}>+100</button>
 
-              <button onClick={() => restarPunto(equipo.id, equipo.puntos)}>
-                -1
-              </button>
+              {/* RESTAR */}
+              <button onClick={() => cambiarPuntos(equipo.id, equipo.puntos, -1)}>-1</button>
+              <button onClick={() => cambiarPuntos(equipo.id, equipo.puntos, -10)}>-10</button>
+              <button onClick={() => cambiarPuntos(equipo.id, equipo.puntos, -100)}>-100</button>
 
               <button onClick={() => eliminarEquipo(equipo.id)}>
                 Eliminar
