@@ -63,29 +63,32 @@ function Admin() {
     return () => unsubscribe()
   }, [])
 
-  const agregarEquipo = async (e: any) => {
-    e.preventDefault()
+const agregarEquipo = async (e: any) => {
+  e.preventDefault()
 
-    if (!nombre || !puntos) return
-    if (!archivo) return
+  if (!nombre || !puntos) return
 
-    try {
-      const imageUrl = await uploadImage(archivo)
+  try {
+    let imageUrl = ""
 
-      await addDoc(collection(db, "equipos"), {
-        nombre,
-        puntos: Number(puntos),
-        escudo: imageUrl,
-      })
-
-      setNombre("")
-      setPuntos("")
-      setArchivo(null)
-    } catch (err) {
-      console.error(err)
-      alert("Error agregando equipo")
+    if (archivo) {
+      imageUrl = await uploadImage(archivo)
     }
+
+    await addDoc(collection(db, "equipos"), {
+      nombre,
+      puntos: Number(puntos),
+      escudo: imageUrl,
+    })
+
+    setNombre("")
+    setPuntos("")
+    setArchivo(null)
+  } catch (err) {
+    console.error(err)
+    alert("Error agregando equipo")
   }
+}
 
   const cambiarPuntos = async (
     id: string,
@@ -285,16 +288,34 @@ function Admin() {
             }}
           >
             <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
-              <img
-                src={equipo.escudo}
-                alt="escudo"
-                style={{
-                  width: "60px",
-                  height: "60px",
-                  borderRadius: "50%",
-                  objectFit: "cover",
-                }}
-              />
+{equipo.escudo ? (
+  <img
+    src={equipo.escudo}
+    alt="escudo"
+    style={{
+      width: "60px",
+      height: "60px",
+      borderRadius: "50%",
+      objectFit: "cover",
+    }}
+  />
+) : (
+  <div
+    style={{
+      width: "60px",
+      height: "60px",
+      borderRadius: "50%",
+      background: "#3f3f46",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      fontWeight: "bold",
+      fontSize: "24px",
+    }}
+  >
+    {equipo.nombre?.charAt(0)?.toUpperCase()}
+  </div>
+)}
 
               <div>
                 <h2>{equipo.nombre}</h2>
