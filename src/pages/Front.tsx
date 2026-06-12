@@ -80,32 +80,39 @@ function Front() {
                 #{index + 1}
               </div>
 
-              {/* ESCUDO CLICKABLE */}
-              <img
-                src={equipo.escudo}
-                alt="escudo"
-                onClick={() => setImagenSeleccionada(equipo.escudo)}
-                style={{
-                  width: "80px",
-                  height: "80px",
-                  borderRadius: "50%",
-                  objectFit: "cover",
-                  border: "2px solid #52525b",
-                  cursor: "pointer",
-                }}
-              />
-
-              <div>
-                <h2 style={{ margin: 0 }}>{equipo.nombre}</h2>
-              </div>
-            </div>
-
-            <h2 style={{ fontSize: "22px" }}>
-              {equipo.puntos} pts
-            </h2>
-          </div>
-        ))}
-      </div>
+{equipo.escudo ? (
+  <img
+    src={equipo.escudo}
+    alt={equipo.nombre}
+    onClick={() => setImagenSeleccionada(equipo.escudo)}
+    style={{
+      width: "80px",
+      height: "80px",
+      borderRadius: "50%",
+      objectFit: "cover",
+      border: "2px solid #52525b",
+      cursor: "pointer",
+    }}
+  />
+) : (
+  <div
+    style={{
+      width: "80px",
+      height: "80px",
+      borderRadius: "50%",
+      background: "#3f3f46",
+      border: "2px solid #52525b",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      fontWeight: "bold",
+      fontSize: "32px",
+      color: "#fff",
+    }}
+  >
+    {equipo.nombre?.charAt(0)?.toUpperCase()}
+  </div>
+)}
 
       {/* MODAL IMAGEN */}
       {imagenSeleccionada && (
