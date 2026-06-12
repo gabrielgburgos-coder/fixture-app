@@ -20,6 +20,30 @@ function Admin() {
   const [puntos, setPuntos] = useState("")
   const [archivo, setArchivo] = useState<any>(null)
 
+  const [usuario, setUsuario] = useState("")
+  const [password, setPassword] = useState("")
+
+  const [logueado, setLogueado] = useState(
+    sessionStorage.getItem("admin") === "ok"
+  )
+
+  const login = () => {
+    if (
+      usuario === "admin" &&
+      password === "4754"
+    ) {
+      sessionStorage.setItem("admin", "ok")
+      setLogueado(true)
+    } else {
+      alert("Usuario o contraseña incorrectos")
+    }
+  }
+
+  const logout = () => {
+    sessionStorage.removeItem("admin")
+    setLogueado(false)
+  }
+
   useEffect(() => {
     const unsubscribe = onSnapshot(collection(db, "equipos"), (snapshot) => {
       const lista: any[] = []
@@ -63,7 +87,6 @@ function Admin() {
     }
   }
 
-  // 🔥 función genérica para sumar/restar
   const cambiarPuntos = async (
     id: string,
     puntosActuales: number,
@@ -80,6 +103,82 @@ function Admin() {
     await deleteDoc(doc(db, "equipos", id))
   }
 
+  if (!logueado) {
+    return (
+      <div
+        style={{
+          background: "#18181b",
+          minHeight: "100vh",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <div
+          style={{
+            background: "#27272a",
+            padding: "30px",
+            borderRadius: "15px",
+            width: "320px",
+          }}
+        >
+          <h2
+            style={{
+              color: "white",
+              marginBottom: "20px",
+            }}
+          >
+            Login Admin
+          </h2>
+
+          <input
+            type="text"
+            placeholder="Usuario"
+            value={usuario}
+            onChange={(e) => setUsuario(e.target.value)}
+            style={{
+              width: "100%",
+              padding: "12px",
+              marginBottom: "10px",
+              borderRadius: "10px",
+              border: "none",
+            }}
+          />
+
+          <input
+            type="password"
+            placeholder="Contraseña"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            style={{
+              width: "100%",
+              padding: "12px",
+              marginBottom: "15px",
+              borderRadius: "10px",
+              border: "none",
+            }}
+          />
+
+          <button
+            onClick={login}
+            style={{
+              width: "100%",
+              background: "#22c55e",
+              color: "white",
+              padding: "12px",
+              borderRadius: "10px",
+              border: "none",
+              cursor: "pointer",
+              fontWeight: "bold",
+            }}
+          >
+            Ingresar
+          </button>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div
       style={{
@@ -91,6 +190,22 @@ function Admin() {
       }}
     >
       <h1>Carga de equipos y puntajes</h1>
+
+      <button
+        onClick={logout}
+        style={{
+          background: "#ef4444",
+          color: "white",
+          padding: "10px 15px",
+          border: "none",
+          borderRadius: "10px",
+          cursor: "pointer",
+          marginTop: "10px",
+          marginBottom: "20px",
+        }}
+      >
+        Cerrar sesión
+      </button>
 
       <form
         onSubmit={agregarEquipo}
@@ -188,12 +303,10 @@ function Admin() {
             </div>
 
             <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
-              {/* SUMAR */}
               <button onClick={() => cambiarPuntos(equipo.id, equipo.puntos, 1)}>+1</button>
               <button onClick={() => cambiarPuntos(equipo.id, equipo.puntos, 10)}>+10</button>
               <button onClick={() => cambiarPuntos(equipo.id, equipo.puntos, 100)}>+100</button>
 
-              {/* RESTAR */}
               <button onClick={() => cambiarPuntos(equipo.id, equipo.puntos, -1)}>-1</button>
               <button onClick={() => cambiarPuntos(equipo.id, equipo.puntos, -10)}>-10</button>
               <button onClick={() => cambiarPuntos(equipo.id, equipo.puntos, -100)}>-100</button>
