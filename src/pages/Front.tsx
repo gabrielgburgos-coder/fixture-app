@@ -46,15 +46,15 @@ function Front() {
     justifyContent: "center",
     gap: "30px",
     marginBottom: "20px",
-    flexWrap: "wrap",
+    flexWrap: "nowrap",
   }}
 >
   <img
     src={escudo}
     alt="Escudo"
     style={{
-      width: "120px",
-      height: "120px",
+      width: "90px",
+      height: "90px",
       objectFit: "contain",
     }}
   />
@@ -88,8 +88,8 @@ function Front() {
     src={mascota}
     alt="Mascota"
     style={{
-      width: "140px",
-      height: "140px",
+      width: "110px",
+      height: "110px",
       objectFit: "contain",
     }}
   />
