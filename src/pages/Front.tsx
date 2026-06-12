@@ -1,6 +1,65 @@
 import { useEffect, useState } from "react"
 import { db } from "../firebase"
 import { collection, onSnapshot } from "firebase/firestore"
+import escudo from "../assets/escudo.png"
+import mascota from "../assets/mascota.png"
+
+<div
+  style={{
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "30px",
+    marginBottom: "20px",
+    flexWrap: "wrap",
+  }}
+>
+  <img
+    src={escudo}
+    alt="Escudo"
+    style={{
+      width: "120px",
+      height: "120px",
+      objectFit: "contain",
+    }}
+  />
+
+  <div style={{ textAlign: "center" }}>
+    <h1
+      style={{
+        margin: 0,
+        fontSize: "42px",
+      }}
+    >
+      Registro de puntos
+    </h1>
+
+    <h2
+      style={{
+        marginTop: "10px",
+        color: "#d4d4d8",
+      }}
+    >
+      Puntaje total Olivos:{" "}
+      {equipos.reduce(
+        (total, equipo) => total + (equipo.puntos || 0),
+        0
+      )}{" "}
+      pts
+    </h2>
+  </div>
+
+  <img
+    src={mascota}
+    alt="Mascota"
+    style={{
+      width: "140px",
+      height: "140px",
+      objectFit: "contain",
+    }}
+  />
+</div>
+
 
 function Front() {
   const [equipos, setEquipos] = useState<any[]>([])
@@ -80,39 +139,20 @@ function Front() {
                 #{index + 1}
               </div>
 
-              {equipo.escudo ? (
-                <img
-                  src={equipo.escudo}
-                  alt={equipo.nombre}
-                  onClick={() => setImagenSeleccionada(equipo.escudo)}
-                  style={{
-                    width: "80px",
-                    height: "80px",
-                    borderRadius: "50%",
-                    objectFit: "cover",
-                    border: "2px solid #52525b",
-                    cursor: "pointer",
-                  }}
-                />
-              ) : (
-                <div
-                  style={{
-                    width: "80px",
-                    height: "80px",
-                    borderRadius: "50%",
-                    background: "#3f3f46",
-                    border: "2px solid #52525b",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontWeight: "bold",
-                    fontSize: "32px",
-                    color: "#fff",
-                  }}
-                >
-                  {equipo.nombre?.charAt(0)?.toUpperCase()}
-                </div>
-              )}
+              {/* ESCUDO CLICKABLE */}
+              <img
+                src={equipo.escudo}
+                alt="escudo"
+                onClick={() => setImagenSeleccionada(equipo.escudo)}
+                style={{
+                  width: "80px",
+                  height: "80px",
+                  borderRadius: "50%",
+                  objectFit: "cover",
+                  border: "2px solid #52525b",
+                  cursor: "pointer",
+                }}
+              />
 
               <div>
                 <h2 style={{ margin: 0 }}>{equipo.nombre}</h2>
@@ -126,6 +166,7 @@ function Front() {
         ))}
       </div>
 
+      {/* MODAL IMAGEN */}
       {imagenSeleccionada && (
         <div
           onClick={() => setImagenSeleccionada(null)}
