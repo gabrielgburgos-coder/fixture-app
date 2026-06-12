@@ -4,7 +4,42 @@ import { collection, onSnapshot } from "firebase/firestore"
 import escudo from "../assets/escudo.png"
 import mascota from "../assets/mascota.png"
 
-<div
+
+
+
+function Front() {
+  const [equipos, setEquipos] = useState<any[]>([])
+  const [imagenSeleccionada, setImagenSeleccionada] = useState<string | null>(null)
+
+  useEffect(() => {
+    const unsubscribe = onSnapshot(collection(db, "equipos"), (snapshot) => {
+      const lista: any[] = []
+
+      snapshot.forEach((doc) => {
+        lista.push({
+          id: doc.id,
+          ...doc.data(),
+        })
+      })
+
+      lista.sort((a, b) => b.puntos - a.puntos)
+
+      setEquipos(lista)
+    })
+
+    return () => unsubscribe()
+  }, [])
+
+  return (
+    <div
+      style={{
+        background: "#18181b",
+        minHeight: "100vh",
+        color: "white",
+        padding: "40px",
+      }}
+    >
+      <div
   style={{
     display: "flex",
     alignItems: "center",
@@ -59,41 +94,6 @@ import mascota from "../assets/mascota.png"
     }}
   />
 </div>
-
-
-function Front() {
-  const [equipos, setEquipos] = useState<any[]>([])
-  const [imagenSeleccionada, setImagenSeleccionada] = useState<string | null>(null)
-
-  useEffect(() => {
-    const unsubscribe = onSnapshot(collection(db, "equipos"), (snapshot) => {
-      const lista: any[] = []
-
-      snapshot.forEach((doc) => {
-        lista.push({
-          id: doc.id,
-          ...doc.data(),
-        })
-      })
-
-      lista.sort((a, b) => b.puntos - a.puntos)
-
-      setEquipos(lista)
-    })
-
-    return () => unsubscribe()
-  }, [])
-
-  return (
-    <div
-      style={{
-        background: "#18181b",
-        minHeight: "100vh",
-        color: "white",
-        padding: "40px",
-      }}
-    >
-      <h1>Tabla de posiciones</h1>
 
       <div
         style={{
