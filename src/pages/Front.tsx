@@ -59,6 +59,23 @@ function Front() {
         padding: "40px",
       }}
     >
+      <div
+  style={{
+    width: "100%",
+    padding: "8px 0",
+    textAlign: "center",
+    fontSize: "14px",
+    letterSpacing: "3px",
+    color: "#d4d4d8",
+    background: "#18181b",
+    borderBottom: "1px solid #3f3f46",
+    position: "sticky",
+    top: 0,
+    zIndex: 1000,
+  }}
+>
+  Registro de puntos
+</div>
       {/* HEADER */}
       <div
         style={{
