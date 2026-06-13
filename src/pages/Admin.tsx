@@ -330,7 +330,7 @@ function Admin() {
             <input
               type="number"
               value={t.puntos}
-              onChange={(e) => editarFilaTabla(t.id, e.target.value)}
+              onChange={(e) => editarFilaTabla(t.id, Number(e.target.value))}
             />
 
             <button onClick={() => eliminarFilaTabla(t.id)}>🗑</button>
