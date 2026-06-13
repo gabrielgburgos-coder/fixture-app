@@ -42,7 +42,7 @@ function Front() {
       })
 
       // orden automático por puntaje
-      items.sort((a, b) => b.score - a.score)
+      items.sort((a, b) => (b.puntos || 0) - (a.puntos || 0))
 
       setTabla(items)
     })
