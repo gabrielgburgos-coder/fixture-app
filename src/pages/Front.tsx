@@ -94,22 +94,7 @@ function Front() {
         />
 
         <div style={{ textAlign: "center" }}>
- <h1
-  style={{
-    width: "100%",
-    textAlign: "center",
-    fontSize: "28px",
-    fontWeight: "700",
-    letterSpacing: "6px",
-    textTransform: "uppercase",
-    margin: 0,
-    padding: "10px 0",
-    background: "#27272a",
-    borderRadius: "10px",
-  }}
->
-  Registro de puntos
-</h1>
+
 
         <h2
   style={{
