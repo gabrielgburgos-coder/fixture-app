@@ -209,8 +209,8 @@ function Front() {
             {tabla.map((item, index) => (
               <tr key={item.id} style={{ textAlign: "center" }}>
                 <td style={{ padding: "10px" }}>{index + 1}</td>
-                <td style={{ padding: "10px" }}>{item.name}</td>
-                <td style={{ padding: "10px" }}>{item.score}</td>
+                <td style={{ padding: "10px" }}>{item.nombre}</td>
+                <td style={{ padding: "10px" }}>{item.puntos}</td>
               </tr>
             ))}
           </tbody>
