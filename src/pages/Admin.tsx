@@ -12,12 +12,25 @@ import {
 import { uploadImage } from "../utils/uploadImage"
 
 function Admin() {
+  // =====================
+  // EQUIPOS
+  // =====================
   const [equipos, setEquipos] = useState<any[]>([])
 
   const [nombre, setNombre] = useState("")
   const [puntos, setPuntos] = useState("")
   const [archivo, setArchivo] = useState<any>(null)
 
+  // =====================
+  // TABLA
+  // =====================
+  const [tabla, setTabla] = useState<any[]>([])
+  const [nombreTabla, setNombreTabla] = useState("")
+  const [puntosTabla, setPuntosTabla] = useState("")
+
+  // =====================
+  // LOGIN
+  // =====================
   const [usuario, setUsuario] = useState("")
   const [password, setPassword] = useState("")
 
@@ -25,7 +38,6 @@ function Admin() {
     sessionStorage.getItem("admin") === "ok"
   )
 
-  // 🔐 LOGIN
   const login = () => {
     if (usuario === "admin" && password === "4754") {
       sessionStorage.setItem("admin", "ok")
@@ -40,9 +52,11 @@ function Admin() {
     setLogueado(false)
   }
 
-  // 📦 CARGA EQUIPOS
+  // =====================
+  // CARGA EQUIPOS
+  // =====================
   useEffect(() => {
-    const unsubscribe = onSnapshot(collection(db, "equipos"), (snapshot) => {
+    const unsub = onSnapshot(collection(db, "equipos"), (snapshot) => {
       const lista: any[] = []
 
       snapshot.forEach((docu) => {
@@ -52,16 +66,37 @@ function Admin() {
         })
       })
 
-      // 🔥 orden por puntos
       lista.sort((a, b) => b.puntos - a.puntos)
 
       setEquipos(lista)
     })
 
-    return () => unsubscribe()
+    return () => unsub()
   }, [])
 
-  // ➕ AGREGAR EQUIPO
+  // =====================
+  // CARGA TABLA
+  // =====================
+  useEffect(() => {
+    const unsub = onSnapshot(collection(db, "tabla"), (snapshot) => {
+      const lista: any[] = []
+
+      snapshot.forEach((docu) => {
+        lista.push({
+          id: docu.id,
+          ...docu.data(),
+        })
+      })
+
+      setTabla(lista)
+    })
+
+    return () => unsub()
+  }, [])
+
+  // =====================
+  // EQUIPOS CRUD
+  // =====================
   const agregarEquipo = async (e: any) => {
     e.preventDefault()
 
@@ -89,7 +124,6 @@ function Admin() {
     }
   }
 
-  // 🔼 EDITAR PUNTOS
   const cambiarPuntos = async (
     id: string,
     puntosActuales: number,
@@ -102,12 +136,38 @@ function Admin() {
     })
   }
 
-  // 🗑 ELIMINAR
   const eliminarEquipo = async (id: string) => {
     await deleteDoc(doc(db, "equipos", id))
   }
 
-  // 🔐 LOGIN SCREEN
+  // =====================
+  // TABLA CRUD
+  // =====================
+  const agregarFilaTabla = async () => {
+    if (!nombreTabla || !puntosTabla) return
+
+    await addDoc(collection(db, "tabla"), {
+      nombre: nombreTabla,
+      puntos: Number(puntosTabla),
+    })
+
+    setNombreTabla("")
+    setPuntosTabla("")
+  }
+
+  const editarFilaTabla = async (id: string, valor: number) => {
+    await updateDoc(doc(db, "tabla", id), {
+      puntos: Number(valor),
+    })
+  }
+
+  const eliminarFilaTabla = async (id: string) => {
+    await deleteDoc(doc(db, "tabla", id))
+  }
+
+  // =====================
+  // LOGIN SCREEN
+  // =====================
   if (!logueado) {
     return (
       <div
@@ -119,8 +179,17 @@ function Admin() {
           alignItems: "center",
         }}
       >
-        <div style={{ background: "#27272a", padding: "30px", borderRadius: "15px", width: "320px" }}>
-          <h2 style={{ color: "white", marginBottom: "20px" }}>Login Admin</h2>
+        <div
+          style={{
+            background: "#27272a",
+            padding: "30px",
+            borderRadius: "15px",
+            width: "320px",
+          }}
+        >
+          <h2 style={{ color: "white", marginBottom: "20px" }}>
+            Login Admin
+          </h2>
 
           <input
             placeholder="Usuario"
@@ -144,7 +213,6 @@ function Admin() {
               background: "#22c55e",
               color: "white",
               padding: "12px",
-              border: "none",
               borderRadius: "10px",
               fontWeight: "bold",
             }}
@@ -156,6 +224,9 @@ function Admin() {
     )
   }
 
+  // =====================
+  // ADMIN MAIN
+  // =====================
   return (
     <div
       style={{
@@ -165,13 +236,12 @@ function Admin() {
         padding: "40px",
       }}
     >
-      <h1>Admin equipos</h1>
+      <h1>Admin general</h1>
 
       <button
         onClick={logout}
         style={{
           background: "#ef4444",
-          color: "white",
           padding: "10px 15px",
           borderRadius: "10px",
           border: "none",
@@ -181,16 +251,19 @@ function Admin() {
         Cerrar sesión
       </button>
 
-      {/* FORM */}
+      {/* ===================== */}
+      {/* EQUIPOS */}
+      {/* ===================== */}
+      <h2>Equipos</h2>
+
       <form
         onSubmit={agregarEquipo}
         style={{ display: "flex", flexDirection: "column", gap: "10px", maxWidth: "400px" }}
       >
         <input
-          placeholder="Nombre del equipo"
+          placeholder="Nombre"
           value={nombre}
           onChange={(e) => setNombre(e.target.value)}
-          style={{ padding: "12px", borderRadius: "10px" }}
         />
 
         <input
@@ -198,76 +271,69 @@ function Admin() {
           placeholder="Puntos"
           value={puntos}
           onChange={(e) => setPuntos(e.target.value)}
-          style={{ padding: "12px", borderRadius: "10px" }}
         />
 
-        <input
-          type="file"
-          onChange={(e: any) => setArchivo(e.target.files[0])}
-        />
+        <input type="file" onChange={(e: any) => setArchivo(e.target.files[0])} />
 
-        <button
-          type="submit"
-          style={{
-            background: "#22c55e",
-            padding: "12px",
-            borderRadius: "10px",
-            fontWeight: "bold",
-          }}
-        >
-          Agregar equipo
-        </button>
+        <button type="submit">Agregar equipo</button>
       </form>
 
-      {/* LISTA */}
-      <div style={{ marginTop: "40px", display: "flex", flexDirection: "column", gap: "15px" }}>
-        {equipos.map((equipo) => (
+      <div style={{ marginTop: "20px" }}>
+        {equipos.map((e) => (
+          <div key={e.id} style={{ marginBottom: "10px" }}>
+            <b>{e.nombre}</b> - {e.puntos} pts
+
+            <button onClick={() => cambiarPuntos(e.id, e.puntos, 1)}>+1</button>
+            <button onClick={() => cambiarPuntos(e.id, e.puntos, 10)}>+10</button>
+            <button onClick={() => cambiarPuntos(e.id, e.puntos, -1)}>-1</button>
+
+            <button onClick={() => eliminarEquipo(e.id)}>Eliminar</button>
+          </div>
+        ))}
+      </div>
+
+      {/* ===================== */}
+      {/* TABLA EDITABLE */}
+      {/* ===================== */}
+      <hr style={{ margin: "40px 0" }} />
+
+      <h2>Tabla de posiciones</h2>
+
+      <input
+        placeholder="Nombre"
+        value={nombreTabla}
+        onChange={(e) => setNombreTabla(e.target.value)}
+      />
+
+      <input
+        type="number"
+        placeholder="Puntos"
+        value={puntosTabla}
+        onChange={(e) => setPuntosTabla(e.target.value)}
+      />
+
+      <button onClick={agregarFilaTabla}>Agregar a tabla</button>
+
+      <div style={{ marginTop: "20px" }}>
+        {tabla.map((t) => (
           <div
-            key={equipo.id}
+            key={t.id}
             style={{
-              background: "#27272a",
-              padding: "15px",
-              borderRadius: "15px",
               display: "flex",
-              justifyContent: "space-between",
+              gap: "10px",
               alignItems: "center",
+              marginBottom: "10px",
             }}
           >
-            <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
-              {equipo.escudo ? (
-                <img
-                  src={equipo.escudo}
-                  style={{ width: "60px", height: "60px", borderRadius: "50%" }}
-                />
-              ) : (
-                <div
-                  style={{
-                    width: "60px",
-                    height: "60px",
-                    borderRadius: "50%",
-                    background: "#3f3f46",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  {equipo.nombre?.charAt(0)}
-                </div>
-              )}
+            <span style={{ width: "150px" }}>{t.nombre}</span>
 
-              <div>
-                <h2>{equipo.nombre}</h2>
-                <p>{equipo.puntos} pts</p>
-              </div>
-            </div>
+            <input
+              type="number"
+              value={t.puntos}
+              onChange={(e) => editarFilaTabla(t.id, e.target.value)}
+            />
 
-            {/* BOTONES */}
-            <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
-              <button onClick={() => cambiarPuntos(equipo.id, equipo.puntos, 1)}>+1</button>
-              <button onClick={() => cambiarPuntos(equipo.id, equipo.puntos, 10)}>+10</button>
-              <button onClick={() => cambiarPuntos(equipo.id, equipo.puntos, -1)}>-1</button>
-              <button onClick={() => eliminarEquipo(equipo.id)}>Eliminar</button>
-            </div>
+            <button onClick={() => eliminarFilaTabla(t.id)}>🗑</button>
           </div>
         ))}
       </div>
