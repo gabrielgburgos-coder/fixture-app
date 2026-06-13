@@ -77,18 +77,25 @@ function Front() {
         />
 
         <div style={{ textAlign: "center" }}>
-          <h1 style={{ margin: 0, fontSize: "42px" }}>
-            Registro de puntos
-          </h1>
+         <h1 style={{ margin: 0, fontSize: "28px", fontWeight: "600" }}>
+  Registro de puntos
+</h1>
 
-          <h2 style={{ marginTop: "10px", color: "#d4d4d8" }}>
-            Puntaje total Olivos:{" "}
-            {equipos.reduce(
-              (total, equipo) => total + (equipo.puntos || 0),
-              0
-            )}{" "}
-            pts
-          </h2>
+        <h2
+  style={{
+    marginTop: "10px",
+    fontSize: "32px",
+    fontWeight: "700",
+    color: "#556B2F", // verde olivo
+  }}
+>
+  Puntaje total Olivos:{" "}
+  {equipos.reduce(
+    (total, equipo) => total + (equipo.puntos || 0),
+    0
+  )}{" "}
+  pts
+</h2>
         </div>
 
         <img
@@ -185,7 +192,7 @@ function Front() {
       {/* 📊 TABLA FINAL */}
       <div style={{ marginTop: "60px" }}>
         <h2 style={{ textAlign: "center", marginBottom: "20px" }}>
-          Tabla de posiciones
+          Copa de luz 2026 Resultados
         </h2>
 
         <table
